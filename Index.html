@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dhamakedar Wrestling – Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #111;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+    h1 {
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .info {
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .top-bar {
+      width: 800px;
+      max-width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .health-container {
+      flex: 1;
+      background: #333;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid #555;
+      position: relative;
+      height: 26px;
+    }
+
+    .health-fill {
+      height: 100%;
+      width: 100%;
+      transition: width 0.15s linear;
+    }
+
+    .player1-health {
+      background: linear-gradient(90deg, #ff0044, #ff7700);
+    }
+
+    .player2-health {
+      background: linear-gradient(90deg, #00c8ff, #0055ff);
+    }
+
+    .health-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      text-shadow: 0 0 4px #000;
+    }
+
+    .round-info {
+      min-width: 150px;
+      text-align: center;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #222;
+      border: 1px solid #555;
+    }
+
+    #gameArea {
+      width: 800px;
+      max-width: 100%;
+      height: 300px;
+      border: 4px solid #666;
+      border-radius: 8px;
+      background: radial-gradient(circle at center, #333 0, #111 70%);
+      margin-bottom: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ring-ropes {
+      position: absolute;
+      inset: 15px;
+      border: 3px solid #aaa;
+      border-radius: 10px;
+      pointer-events: none;
+    }
+
+    .fighter {
+      position: absolute;
+      bottom: 30px;
+      width: 60px;
+      height: 100px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      text-align: center;
+      text-shadow: 0 0 3px #000;
+      transition: transform 0.05s linear;
+    }
+
+    #p1 {
+      background: linear-gradient(#880000, #ff4444);
+    }
+
+    #p2 {
+      background: linear-gradient(#003388, #00aaff);
+    }
+
+    .fighter.attacking {
+      box-shadow: 0 0 15px 3px #ffd700;
+      transform: translateY(-10px) scale(1.05);
+    }
+
+    .referee {
+      position: absolute;
+      bottom: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 0 0 5px #000;
+    }
+
+    #message {
+      margin-bottom: 10px;
+      font-size: 16px;
+      min-height: 22px;
+      text-align: center;
+    }
+
+    .controls {
+      width: 800px;
+      max-width: 100%;
+      font-size: 13px;
+      background: #1b1b1b;
+      border-radius: 6px;
+      border: 1px solid #444;
+      padding: 10px;
+      line-height: 1.4;
+    }
+
+    .controls h2 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .controls-column-wrapper {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .controls-column {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    code {
+      background: #333;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>DHAMAKEDAR WRESTLING – HTML DEMO</h1>
+  <div class="info">
+    3 Rounds • Blood/Health System • Jo 2 round jeete woh FINAL WINNER 🏆<br />
+    <b>Tip:</b> Best 2-player local match ke liye ek hi keyboard par khelo.
+  </div>
+
+  <div class="top-bar">
+    <div class="health-container">
+      <div id="p1-health-fill" class="health-fill player1-health"></div>
+      <div class="health-label" id="p1-health-label">Player 1 Blood: 100</div>
+    </div>
+    <div class="round-info" id="roundInfo">
+      Round: 1 / 3<br />
+      P1 Wins: 0 • P2 Wins: 0
+    </div>
+    <div class="health-container">
+      <div id="p2-health-fill" class="health-fill player2-health"></div>
+      <div class="health-label" id="p2-health-label">Player 2 Blood: 100</div>
+    </div>
+  </div>
+
+  <div id="message"></div>
+
+  <div id="gameArea">
+    <div class="ring-ropes"></div>
+    <div id="p1" class="fighter">PLAYER 1</div>
+    <div id="p2" class="fighter">PLAYER 2</div>
+    <div class="referee" id="refereeText">Ready? Press ENTER to Start!</div>
+  </div>
+
+  <div class="controls">
+    <h2>Controls</h2>
+    <div class="controls-column-wrapper">
+      <div class="controls-column">
+        <b>Player 1 (Left):</b><br />
+        Move Left: <code>A</code><br />
+        Move Right: <code>D</code><br />
+        Punch: <code>F</code> (Damage: 10)<br />
+        Kick: <code>G</code> (Damage: 15)<br />
+      </div>
+      <div class="controls-column">
+        <b>Player 2 (Right):</b><br />
+        Move Left: <code>J</code><br />
+        Move Right: <code>L</code><br />
+        Punch: <code>N</code> (Damage: 10)<br />
+        Kick: <code>M</code> (Damage: 15)<br />
+      </div>
+      <div class="controls-column">
+        <b>Match Controls:</b><br />
+        Start / Next Round: <code>ENTER</code><br />
+        Reset Match Completely: <code>R</code><br />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Basic game config
+    const MAX_HEALTH = 100;
+    const DAMAGE = {
+      punch: 10,
+      kick: 15
+    };
+    const ROUND_LIMIT = 3;
+    const WINS_TO_FINISH = 2;
+
+    const gameArea = document.getElementById("gameArea");
+    const p1El = document.getElementById("p1");
+    const p2El = document.getElementById("p2");
+    const refereeText = document.getElementById("refereeText");
+    const messageEl = document.getElementById("message");
+    const roundInfoEl = document.getElementById("roundInfo");
+
+    const p1HealthFill = document.getElementById("p1-health-fill");
+    const p2HealthFill = document.getElementById("p2-health-fill");
+    const p1HealthLabel = document.getElementById("p1-health-label");
+    const p2HealthLabel = document.getElementById("p2-health-label");
+
+    // Fighter state
+    const fighterWidth = 60;
+    let gameState = {
+      round: 1,
+      p1Wins: 0,
+      p2Wins: 0,
+      roundActive: false,
+      gameOver: false
+    };
+
+    let p1 = {
+      x: 80,
+      health: MAX_HEALTH
+    };
+    let p2 = {
+      x: 800 - 80 - fighterWidth,
+      health: MAX_HEALTH
+    };
+
+    function clampPosition(x) {
+      const padding = 20;
+      const areaWidth = gameArea.clientWidth;
+      const maxX = areaWidth - fighterWidth - padding;
+      return Math.max(padding, Math.min(x, maxX));
+    }
+
+    function updatePositions() {
+      p1El.style.left = p1.x + "px";
+      p2El.style.left = p2.x + "px";
+    }
+
+    function updateHealthUI() {
+      const p1Percent = Math.max(0, (p1.health / MAX_HEALTH) * 100);
+      const p2Percent = Math.max(0, (p2.health / MAX_HEALTH) * 100);
+      p1HealthFill.style.width = p1Percent + "%";
+      p2HealthFill.style.width = p2Percent + "%";
+      p1HealthLabel.textContent = "Player 1 Blood: " + Math.max(0, Math.round(p1.health));
+      p2HealthLabel.textContent = "Player 2 Blood: " + Math.max(0, Math.round(p2.health));
+    }
+
+    function updateRoundInfo(extraText) {
+      let text =
+        "Round: " + gameState.round + " / " + ROUND_LIMIT +
+        "<br />P1 Wins: " + gameState.p1Wins +
+        " • P2 Wins: " + gameState.p2Wins;
+      if (extraText) {
+        text += "<br />" + extraText;
+      }
+      roundInfoEl.innerHTML = text;
+    }
+
+    function resetFightersForRound() {
+      p1.health = MAX_HEALTH;
+      p2.health = MAX_HEALTH;
+      const areaWidth = gameArea.clientWidth;
+      p1.x = areaWidth * 0.25 - fighterWidth / 2;
+      p2.x = areaWidth * 0.75 - fighterWidth / 2;
+      updatePositions();
+      updateHealthUI();
+    }
+
+    function startRound() {
+      if (gameState.gameOver) return;
+
+      resetFightersForRound();
+      gameState.roundActive = true;
+      messageEl.textContent = "Round " + gameState.round + " – FIGHT! 🔥";
+      refereeText.textContent = "FIGHT!";
+      updateRoundInfo();
+    }
+
+    function endRound(winner) {
+      gameState.roundActive = false;
+
+      if (winner === "p1") {
+        gameState.p1Wins += 1;
+        messageEl.textContent = "Player 1 ne round jeet liya! 💥";
+      } else {
+        gameState.p2Wins += 1;
+        messageEl.textContent = "Player 2 ne round jeet liya! 💥";
+      }
+
+      refereeText.textContent = "K.O!";
+
+      // Check if match finished
+      if (gameState.p1Wins >= WINS_TO_FINISH || gameState.p2Wins >= WINS_TO_FINISH || gameState.round >= ROUND_LIMIT) {
+        gameState.gameOver = true;
+        const matchWinner = gameState.p1Wins > gameState.p2Wins ? "Player 1" : "Player 2";
+        messageEl.textContent += "  " + matchWinner + " ne poora match jeet liya! 🏆";
+        updateRoundInfo("Match khatam! Press R to restart.");
+      } else {
+        // Prepare next round
+        gameState.round += 1;
+        updateRoundInfo("Next round ke liye ENTER dabao.");
+      }
+    }
+
+    function dealDamage(target, amount) {
+      if (!gameState.roundActive || gameState.gameOver) return;
+
+      target.health -= amount;
+      updateHealthUI();
+
+      if (target.health <= 0) {
+        // target knocked out
+        if (target === p1) {
+          endRound("p2");
+        } else {
+          endRound("p1");
+        }
+      }
+    }
+
+    function fightersInRange() {
+      // Simple distance check on X axis
+      return Math.abs(p1.x - p2.x) < 80;
+    }
+
+    function doAttack(attackerId, type) {
+      if (!gameState.roundActive || gameState.gameOver) return;
+
+      const damage = DAMAGE[type] || 0;
+      let attackerEl, target;
+
+      if (attackerId === "p1") {
+        attackerEl = p1El;
+        target = p2;
+      } else {
+        attackerEl = p2El;
+        target = p1;
+      }
+
+      attackerEl.classList.add("attacking");
+
+      if (fightersInRange()) {
+        dealDamage(target, damage);
+      }
+
+      setTimeout(() => {
+        attackerEl.classList.remove("attacking");
+      }, 150);
+    }
+
+    // Keyboard controls
+    window.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+
+      // Global keys
+      if (key === "enter") {
+        if (!gameState.roundActive && !gameState.gameOver) {
+          startRound();
+        }
+        return;
+      }
+
+      if (key === "r") {
+        resetMatch();
+        return;
+      }
+
+      if (!gameState.roundActive || gameState.gameOver) return;
+
+      const moveStep = 12;
+
+      // Player 1 movement
+      if (key === "a") {
+        p1.x = clampPosition(p1.x - moveStep);
+      }
+      if (key === "d") {
+        p1.x = clampPosition(p1.x + moveStep);
+      }
+
+      // Player 2 movement
+      if (key === "j") {
+        p2.x = clampPosition(p2.x - moveStep);
+      }
+      if (key === "l") {
+        p2.x = clampPosition(p2.x + moveStep);
+      }
+
+      // Player 1 attacks
+      if (key === "f") {
+        doAttack("p1", "punch");
+      }
+      if (key === "g") {
+        doAttack("p1", "kick");
+      }
+
+      // Player 2 attacks
+      if (key === "n") {
+        doAttack("p2", "punch");
+      }
+      if (key === "m") {
+        doAttack("p2", "kick");
+      }
+
+      updatePositions();
+    });
+
+    function resetMatch() {
+      gameState = {
+        round: 1,
+        p1Wins: 0,
+        p2Wins: 0,
+        roundActive: false,
+        gameOver: false
+      };
+      resetFightersForRound();
+      updateHealthUI();
+      updateRoundInfo();
+      messageEl.textContent = "New match! ENTER dabao start ke liye.";
+      refereeText.textContent = "Ready? Press ENTER!";
+    }
+
+    // Initial setup
+    window.addEventListener("load", () => {
+      resetFightersForRound();
+      updateHealthUI();
+      updateRoundInfo();
+      messageEl.textContent = "Welcome! ENTER dabao Round 1 start karne ke liye.";
+    });
+  </script>
+</body>
+</html>
