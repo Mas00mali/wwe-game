@@ -1,250 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Dhamakedar Wrestling Mobile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Dhamakedar Wrestling</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      text-align: center;
-    }
-    h2 { margin: 8px 0; }
+    body { margin:0; background:#111; color:#fff; font-family:Arial; text-align:center; }
 
-    .top-bar {
-      display: flex;
-      gap: 5px;
-      padding: 5px;
-    }
+    .top-bar { display:flex; gap:5px; padding:5px; }
+    .health { flex:1; background:#333; height:22px; border-radius:6px; position:relative; overflow:hidden; }
+    .fill { height:100%; width:100%; background:red; }
+    .fill.blue { background:blue; }
+    .txt { position:absolute; width:100%; top:0; font-size:12px; }
 
-    .health-container {
-      flex: 1;
-      background: #333;
-      border-radius: 5px;
-      overflow: hidden;
-      position: relative;
-      height: 22px;
-    }
+    #game { position:relative; width:100%; height:260px; background:#222; border:3px solid #555; overflow:hidden; }
 
-    .health-fill {
-      height: 100%;
-      width: 100%;
-      background: red;
-    }
-
-    .p2 { background: blue; }
-
-    .health-text {
-      position: absolute;
-      width: 100%;
-      top: 0;
-      left: 0;
-      font-size: 12px;
-    }
-
-    #roundInfo { font-size: 12px; padding: 3px; }
-
-    #gameArea {
-      position: relative;
-      width: 100%;
-      height: 250px;
-      border: 3px solid #555;
-      background: radial-gradient(circle, #333, #000);
-      overflow: hidden;
-    }
-
+    /* ✅ SAME BODY FOR ALL */
     .fighter {
-      position: absolute;
-      bottom: 10px;
-      width: 60px;
-      height: 90px;
-      border-radius: 8px;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      font-size: 10px;
+      position:absolute;
+      bottom:0;
+      width:90px;
+      height:150px;
+      background-image:url("https://i.imgur.com/8QfQhXk.png");
+      background-size:contain;
+      background-repeat:no-repeat;
+      background-position:center;
     }
 
-    #p1 { background-color: darkred; left: 40px; }
-    #p2 { background-color: darkblue; right: 40px; }
-
-    .touch-panel {
-      display: flex;
-      gap: 5px;
-      padding: 6px;
+    /* ✅ USER FACE ONLY */
+    .face {
+      position:absolute;
+      top:14px;
+      left:25px;
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background-size:cover;
+      background-position:center;
+      border:2px solid #000;
     }
 
-    .panel {
-      flex: 1;
-      background: #222;
-      padding: 6px;
-      border-radius: 8px;
-    }
+    #p1 { left:20px; }
+    #p2 { right:20px; transform:scaleX(-1); }
 
-    button {
-      width: 100%;
-      margin: 3px 0;
-      padding: 8px;
-      background: #444;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 12px;
-    }
+    .panel { display:flex; gap:5px; padding:5px; }
+    .box { flex:1; background:#222; padding:6px; border-radius:8px; }
+    button { width:100%; padding:8px; margin:4px 0; border:none; background:#444; color:white; border-radius:6px; }
+    .main { background:#e65100; }
 
-    button:active {
-      transform: scale(0.95);
-      background: #777;
-    }
-
-    .main-btn { background: #e65100; }
-
-    input { width: 100%; color: white; }
+    input { width:100%; }
   </style>
 </head>
+
 <body>
 
-<h2>🔥 DHAMAKEDAR WRESTLING 🔥</h2>
+<h3>🔥 DHAMAKEDAR WRESTLING 🔥</h3>
 
-<div>
-  Player 1 Photo: <input type="file" id="p1Upload" accept="image/*">
-  Player 2 Photo: <input type="file" id="p2Upload" accept="image/*">
-</div>
+Player 1 Face <input type="file" id="p1Upload">
+Player 2 Face <input type="file" id="p2Upload">
 
 <div class="top-bar">
-  <div class="health-container">
-    <div id="p1Health" class="health-fill"></div>
-    <div class="health-text" id="p1Text">P1: 100</div>
+  <div class="health"><div id="h1" class="fill"></div><div id="t1" class="txt">P1:100</div></div>
+  <div id="round">Round 1</div>
+  <div class="health"><div id="h2" class="fill blue"></div><div id="t2" class="txt">P2:100</div></div>
+</div>
+
+<div id="game">
+  <div id="p1" class="fighter"><div id="p1Face" class="face"></div></div>
+  <div id="p2" class="fighter"><div id="p2Face" class="face"></div></div>
+  <div id="msg">Start Dabao</div>
+</div>
+
+<div class="panel">
+  <div class="box">
+    <b>P1</b>
+    <button onclick="move('p1',-1)">◀</button>
+    <button onclick="move('p1',1)">▶</button>
+    <button onclick="atk('p1','punch')">👊</button>
+    <button onclick="atk('p1','kick')">🦵</button>
+    <button onclick="atk('p1','finisher')" class="main">💥</button>
   </div>
-  <div id="roundInfo">Round 1 | P1:0 P2:0</div>
-  <div class="health-container">
-    <div id="p2Health" class="health-fill p2"></div>
-    <div class="health-text" id="p2Text">P2: 100</div>
+
+  <div class="box">
+    <b>P2</b>
+    <button onclick="move('p2',-1)">◀</button>
+    <button onclick="move('p2',1)">▶</button>
+    <button onclick="atk('p2','punch')">👊</button>
+    <button onclick="atk('p2','kick')">🦵</button>
+    <button onclick="atk('p2','finisher')" class="main">💥</button>
   </div>
 </div>
 
-<div id="gameArea">
-  <div id="p1" class="fighter">P1</div>
-  <div id="p2" class="fighter">P2</div>
-  <div id="msg" style="position:absolute;top:5px;width:100%">Start Round Dabao</div>
-</div>
-
-<div class="touch-panel">
-  <div class="panel">
-    <h3>P1</h3>
-    <button onclick="move('p1',-1)">◀ Move</button>
-    <button onclick="move('p1',1)">Move ▶</button>
-    <button onclick="attack('p1','punch')">👊 Punch</button>
-    <button onclick="attack('p1','kick')">🦵 Kick</button>
-    <button onclick="attack('p1','finisher')" class="main-btn">💥 Finisher</button>
-  </div>
-
-  <div class="panel">
-    <h3>P2</h3>
-    <button onclick="move('p2',-1)">◀ Move</button>
-    <button onclick="move('p2',1)">Move ▶</button>
-    <button onclick="attack('p2','punch')">👊 Punch</button>
-    <button onclick="attack('p2','kick')">🦵 Kick</button>
-    <button onclick="attack('p2','finisher')" class="main-btn">💥 Finisher</button>
+<div class="panel">
+  <div class="box">
+    <button onclick="start()" class="main">▶ START ROUND</button>
+    <button onclick="reset()">🔄 RESET</button>
   </div>
 </div>
 
-<div class="touch-panel">
-  <div class="panel">
-    <button onclick="startRound()" class="main-btn">▶ START / NEXT ROUND</button>
-    <button onclick="resetMatch()">🔄 RESET MATCH</button>
-  </div>
-</div>
-
-<audio id="punchSound" src="https://assets.mixkit.co/sfx/preview/mixkit-boxing-punch-2051.mp3"></audio>
-<audio id="kickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fast-kick-2093.mp3"></audio>
-<audio id="crowdSound" src="https://assets.mixkit.co/sfx/preview/mixkit-audience-light-applause-354.mp3" loop></audio>
+<audio id="hit" src="https://assets.mixkit.co/sfx/preview/mixkit-boxing-punch-2051.mp3"></audio>
 
 <script>
-  let p1 = { x: 40, health: 100 };
-  let p2 = { x: 250, health: 100 };
+let p1={x:20,h:100}, p2={x:250,h:100};
+let r=1,w1=0,w2=0,play=false;
+const D={punch:2,kick:3,finisher:8};
 
-  let round = 1, p1Wins = 0, p2Wins = 0;
-  let roundActive = false;
+function ui(){
+  h1.style.width=p1.h+"%"; h2.style.width=p2.h+"%";
+  t1.innerText="P1:"+p1.h; t2.innerText="P2:"+p2.h;
+  round.innerText="Round "+r+" | "+w1+"-"+w2;
+}
 
-  const DAMAGE = { punch: 2, kick: 3, finisher: 8 };
+function start(){
+  p1.h=100; p2.h=100; play=true;
+  msg.innerText="FIGHT🔥";
+  ui();
+}
 
-  function updateUI() {
-    p1Health.style.width = p1.health + "%";
-    p2Health.style.width = p2.health + "%";
-    p1Text.innerText = "P1: " + p1.health;
-    p2Text.innerText = "P2: " + p2.health;
-    roundInfo.innerText = `Round ${round} | P1:${p1Wins} P2:${p2Wins}`;
+function reset(){
+  r=1; w1=0; w2=0; start();
+}
+
+function move(p,d){
+  let o=(p=="p1"?p1:p2);
+  o.x+=d*12;
+  if(o.x<0)o.x=0; if(o.x>300)o.x=300;
+  document.getElementById(p).style.left=o.x+"px";
+}
+
+function atk(p,t){
+  if(!play) return;
+  let a=(p=="p1"?p1:p2), b=(p=="p1"?p2:p1);
+  if(Math.abs(p1.x-p2.x)<80){
+    b.h-=D[t]; if(b.h<0)b.h=0; hit.play();
   }
-
-  function startRound() {
-    if (p1Wins == 2 || p2Wins == 2) return;
-    p1.health = 100;
-    p2.health = 100;
-    roundActive = true;
-    msg.innerText = "FIGHT 🔥";
-    crowdSound.play();
-    updateUI();
+  if(b.h==0){
+    play=false;
+    if(p=="p1")w1++; else w2++;
+    if(w1==2||w2==2) msg.innerText=(w1==2?"P1":"P2")+" FINAL WINNER🏆";
+    else { r++; msg.innerText="Next Round"; }
   }
+  ui();
+}
 
-  function resetMatch() {
-    round = 1; p1Wins = 0; p2Wins = 0;
-    startRound();
-  }
+/* ✅ USER FACE ONLY */
+p1Upload.onchange=e=>{
+  p1Face.style.backgroundImage=`url(${URL.createObjectURL(e.target.files[0])})`;
+};
+p2Upload.onchange=e=>{
+  p2Face.style.backgroundImage=`url(${URL.createObjectURL(e.target.files[0])})`;
+};
 
-  function move(player, dir) {
-    let p = player === "p1" ? p1 : p2;
-    p.x += dir * 10;
-    if (p.x < 0) p.x = 0;
-    if (p.x > 300) p.x = 300;
-    document.getElementById(player).style.left = p.x + "px";
-  }
-
-  function attack(player, type) {
-    if (!roundActive) return;
-
-    let attacker = player === "p1" ? p1 : p2;
-    let target = player === "p1" ? p2 : p1;
-
-    if (Math.abs(p1.x - p2.x) < 80) {
-      target.health -= DAMAGE[type];
-      if (type === "punch") punchSound.play();
-      if (type === "kick" || type === "finisher") kickSound.play();
-      if (target.health < 0) target.health = 0;
-    }
-
-    if (target.health === 0) {
-      roundActive = false;
-      crowdSound.pause();
-      if (player === "p1") p1Wins++; else p2Wins++;
-      if (p1Wins === 2 || p2Wins === 2) {
-        msg.innerText = (p1Wins === 2 ? "PLAYER 1" : "PLAYER 2") + " FINAL WINNER 🏆";
-      } else {
-        round++;
-        msg.innerText = "Round Khatam! Next Round Start Karo";
-      }
-    }
-
-    updateUI();
-  }
-
-  p1Upload.onchange = e => {
-    p1.style.backgroundImage = `url(${URL.createObjectURL(e.target.files[0])})`;
-    p1.style.backgroundSize = "cover";
-  }
-
-  p2Upload.onchange = e => {
-    p2.style.backgroundImage = `url(${URL.createObjectURL(e.target.files[0])})`;
-    p2.style.backgroundSize = "cover";
-  }
-
-  updateUI();
+ui();
 </script>
-
 </body>
 </html>
